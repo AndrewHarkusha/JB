@@ -1,0 +1,4 @@
+joboard:
+    resource: "@JoboardBundle/Resources/config/routing.yml"
+    prefix:   /
+
