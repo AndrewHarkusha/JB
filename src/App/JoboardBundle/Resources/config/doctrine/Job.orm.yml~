@@ -1,7 +1,3 @@
-joboard_app_job:
-    resource: "@JoboardBundle/Resources/config/routing/job.yml"
-    prefix:   /app_job
-
 joboard_homepage:
     path:     /hello/{name}
     defaults: { _controller: JoboardBundle:Default:index }
