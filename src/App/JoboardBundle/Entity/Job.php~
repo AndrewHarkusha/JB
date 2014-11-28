@@ -477,22 +477,6 @@ class Job
      */
     public function setCreatedAtValue()
     {
-        // Add your code here
-    }
-
-    /**
-     * @ORM\PreUpdate
-     */
-    public function setUpdatedAtValue()
-    {
-        // Add your code here
-    }
-
-    /**
-     * @ORM\PrePersist
-     */
-    public function setCreatedAtValue()
-    {
         if(!$this->getCreatedAt())
         {
             $this->created_at = new \DateTime();

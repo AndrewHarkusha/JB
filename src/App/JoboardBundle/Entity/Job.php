@@ -4,6 +4,9 @@ namespace App\JoboardBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
+use App\JoboardBundle\Utils\Joboard as Joborad;
+
+
 /**
  * Job
  */
@@ -490,4 +493,20 @@ class Job
     {
         $this->updated_at = new \DateTime();
     }
+
+    public function getCompanySlug()
+    {
+        return Joborad::slugify($this->getCompany());
+    }
+
+    public function getPositionSlug()
+    {
+        return Joborad::slugify($this->getPosition());
+    }
+
+    public function getLocationSlug()
+    {
+        return Joborad::slugify($this->getLocation());
+    }
+
 }
