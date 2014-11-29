@@ -25,15 +25,18 @@ class JobController extends Controller
 
         $categories = $em->getRepository('JoboardBundle:Category')->getWithJobs();
 
-        foreach($categories as $category)
-        {
-            $category->setActiveJobs($em->getRepository('JoboardBundle:Job')->getActiveJobs($category->getId(), 10));
+        foreach($categories as $category) {
+            $category->setActiveJobs($em->getRepository('JoboardBundle:Job')->getActiveJobs(
+                $category->getId(), 
+                $this->container->getParameter('max_jobs_on_homepage'))
+            );
         }
 
         return $this->render('JoboardBundle:Job:index.html.twig', array(
             'categories' => $categories
         ));
     }
+
 
     /**
      * Creates a new Job entity.
@@ -101,7 +104,7 @@ class JobController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('JoboardBundle:Job')->find($id);
+        $entity = $em->getRepository('JoboardBundle:Job')->getActiveJob($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Job entity.');
