@@ -1,6 +1,7 @@
 App\JoboardBundle\Entity\Job:
     type: entity
     repositoryClass: App\JoboardBundle\Repository\JobRepository
+
     table: job
     id:
         id:
@@ -60,5 +61,5 @@ App\JoboardBundle\Entity\Job:
                 name: category_id
                 referencedColumnName: id
     lifecycleCallbacks:
-        prePersist: [setCreatedAtValue]
-        preUpdate: [setUpdatedAtValue]
+        prePersist: [ setCreatedAtValue, setExpiresAtValue ]
+        preUpdate: [ setUpdatedAtValue ]
