@@ -23,10 +23,15 @@ class JobController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entities = $em->getRepository('JoboardBundle:Job')->getActiveJobs();
+        $categories = $em->getRepository('JoboardBundle:Category')->getWithJobs();
+
+        foreach($categories as $category)
+        {
+            $category->setActiveJobs($em->getRepository('JoboardBundle:Job')->getActiveJobs($category->getId(), 10));
+        }
 
         return $this->render('JoboardBundle:Job:index.html.twig', array(
-            'entities' => $entities
+            'categories' => $categories
         ));
     }
 
