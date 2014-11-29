@@ -1,6 +1,7 @@
 App\JoboardBundle\Entity\Job:
     type: entity
     repositoryClass: App\JoboardBundle\Repository\JobRepository
+
     table: job
     id:
         id:

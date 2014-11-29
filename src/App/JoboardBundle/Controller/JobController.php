@@ -23,15 +23,13 @@ class JobController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $query = $em->createQuery(
-            'SELECT j FROM JoboardBundle:Job j WHERE j.expires_at > :date'
-    )->setParameter('date', date('Y-m-d H:i:s', time()));
-        $entities = $query->getResult();
+        $entities = $em->getRepository('JoboardBundle:Job')->getActiveJobs();
 
         return $this->render('JoboardBundle:Job:index.html.twig', array(
             'entities' => $entities
         ));
     }
+
     /**
      * Creates a new Job entity.
      *
