@@ -4,6 +4,8 @@ namespace App\JoboardBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
+use App\JoboardBundle\Utils\Joboard as Joboard;
+
 /**
  * Category
  */
@@ -30,6 +32,8 @@ class Category
     private $affiliates;
 
     private $activeJobs;
+
+    private $moreJobs;
 
     /**
      * Constructor
@@ -152,5 +156,20 @@ class Category
     public function getActiveJobs()
     {
         return $this->activeJobs;
+    }
+
+    public function getSlug()
+    {
+        return Joboard::slugify($this->getName());
+    }
+
+    public function setMoreJobs($jobs)
+    {
+        $this->moreJobs = $jobs >=  0 ? $jobs : 0;
+    }
+
+    public function getMoreJobs()
+    {
+        return $this->moreJobs;
     }
 }

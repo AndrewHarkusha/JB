@@ -26,10 +26,17 @@ class JobController extends Controller
         $categories = $em->getRepository('JoboardBundle:Category')->getWithJobs();
 
         foreach($categories as $category) {
-            $category->setActiveJobs($em->getRepository('JoboardBundle:Job')->getActiveJobs(
-                $category->getId(), 
+            $category->setActiveJobs($em->getRepository('JoboardBundle:Job')->getActiveJob(
+                $category->getId(),
                 $this->container->getParameter('max_jobs_on_homepage'))
             );
+
+            $activeJobsCount = $em->getRepository('JoboardBundle:Job')->countActiveJobs($category->getId());
+
+            if ($activeJobsCount >= $this->container->getParameter('max_jobs_on_homepage')) {
+                $activeJobsCount -= $this->container->getParameter('max_jobs_on_homepage');
+                $category->setMoreJobs($activeJobsCount);
+            }
         }
 
         return $this->render('JoboardBundle:Job:index.html.twig', array(

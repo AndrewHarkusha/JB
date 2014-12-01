@@ -6,14 +6,16 @@
 {% endblock %}
 
 {% block content %}
-    <div id="jobs">
+<div id="jobs">
         {% for category in categories %}
             <div>
                 <div class="category">
                     <div class="feed">
                         <a href="">Feed</a>
                     </div>
-                    <h1>{{ category.name }}</h1>
+
+                    <h1><a href="{{ path('JoboardBundle_category', {'slug': category.slug}) }}">{{ category.name }}</a></h1>
+
                 </div>
                 <table class="jobs">
                     {% for entity in category.activejobs %}
@@ -28,7 +30,13 @@
                         </tr>
                     {% endfor %}
                 </table>
+                {% if category.morejobs %}
+                    <div class="more-jobs text-right">
+                        и <a href="{{ path('JoboardBundle_category', {'slug': category.slug}) }}">{{ category.morejobs }}</a>
+                        ещё вакансии...
+                    </div>
+                {% endif %}
             </div>
         {% endfor %}
-    </div>
+</div>
 {% endblock %}
