@@ -3,5 +3,5 @@ joboard_app_job:
     prefix:   /app_job
 
 joboard_homepage:
-    path:     /hello/{name}
+    pattern:  /
     defaults: { _controller: JoboardBundle:Job:index }

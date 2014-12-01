@@ -97,6 +97,8 @@ class Job
      */
     private $category;
 
+    private $activeJobs;
+
 
     /**
      * Get id
@@ -520,4 +522,10 @@ class Job
             $this->expires_at = new \DateTime(date('Y-m-d H:i:s', $now + 86400 * 30));
         }
     }
+
+    public function getActiveJobs()
+    {
+        return $this->activeJobs;
+    }
+
 }
