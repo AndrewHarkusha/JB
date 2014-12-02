@@ -12,23 +12,29 @@ use Doctrine\ORM\EntityRepository;
 */
 class JobRepository extends EntityRepository
 {
-    public function getActiveJob($id)
+    public function getActiveJob($categoryId = null, $max = null, $offset = null)
     {
-        $query = $this->createQueryBuilder('j')
-            ->where('j.id = :id')
-            ->setParameter('id', $id)
-            ->andWhere('j.expires_at > :date')
+        $qb = $this->createQueryBuilder('j')
+            ->where('j.expires_at > :date')
             ->setParameter('date', date('Y-m-d H:i:s', time()))
-            ->setMaxResults(1)
-            ->getQuery();
+            ->orderBy('j.expires_at', 'DESC');
 
-        try {
-            $job = $query->getSingleResult();
-        } catch (\Doctrine\Orm\NoResultException $e) {
-            $job = null;
+        if($max) {
+            $qb->setMaxResults($max);
         }
 
-        return $job;
+        if($offset) {
+            $qb->setFirstResult($offset);
+        }
+
+        if($categoryId) {
+            $qb->andWhere('j.category = :category_id')
+                ->setParameter('category_id', $categoryId);
+        }
+
+        $query = $qb->getQuery();
+
+        return $query->getResult();
     }
 
     public function countActiveJobs($categoryId = null)

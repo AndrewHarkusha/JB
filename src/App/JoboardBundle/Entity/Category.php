@@ -158,10 +158,6 @@ class Category
         return $this->activeJobs;
     }
 
-    public function getSlug()
-    {
-        return Joboard::slugify($this->getName());
-    }
 
     public function setMoreJobs($jobs)
     {
@@ -171,5 +167,40 @@ class Category
     public function getMoreJobs()
     {
         return $this->moreJobs;
+    }
+    /**
+     * @var string
+     */
+    private $slug;
+
+
+    /**
+     * Set slug
+     *
+     * @param string $slug
+     * @return Category
+     */
+    public function setSlug($slug)
+    {
+        $this->slug = $slug;
+
+        return $this;
+    }
+
+    /**
+     * Get slug
+     *
+     * @return string 
+     */
+    public function getSlug()
+    {
+        return $this->slug;
+    }
+    /**
+     * @ORM\PrePersist
+     */
+    public function setSlugValue()
+    {
+        $this->slug = Joboard::slugify($this->getName());
     }
 }

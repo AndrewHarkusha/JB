@@ -15,3 +15,5 @@ parameters:
     debug_toolbar: true
     debug_redirects: false
     use_assetic_controller: true
+    max_jobs_on_homepage: 10
+    max_jobs_on_category: 20
