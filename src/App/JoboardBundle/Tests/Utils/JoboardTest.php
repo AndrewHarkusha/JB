@@ -12,5 +12,8 @@ class JoboardTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('ooo-company', Joboard::slugify('ooo company'));
         $this->assertEquals('company', Joboard::slugify(' company'));
         $this->assertEquals('company', Joboard::slugify('company '));
+	$this->assertEquals('n-a', Joboard::slugify(''));
+	$this->assertEquals('n-a', Joboard::slugify(' - '));
+	$this->assertEquals('developpeur-web', Joboard::slugify('Développeur Web'));
     }
 }
