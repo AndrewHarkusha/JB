@@ -8,11 +8,15 @@ class Joboard
 {
     static public function slugify($text)
     {
-        // Замена пробелов на тире
-        $text = preg_replace('/ +/', '-', $text);
-        // Приведение текста к нижнему регистру
-        $text = mb_strtolower(trim($text, '-'), 'utf-8');
+        $text = transliterator_transliterate("Any-Latin; NFD; [:Nonspacing Mark:] Remove; NFC; [:Punctuation:] Remove; Lower();", $text);
+        $text = preg_replace('/[-\s]+/', '-', $text);
+        $text = trim($text, '-');
 
-        return $text;
+        if (empty($text))
+        {
+            return 'n-a';
+        }
+
+    return $text;
     }
 }
