@@ -1,5 +1,7 @@
 <?php
 
+# src/App/JoboardBundle/Form/JobType.php
+
 namespace App\JoboardBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
@@ -8,7 +10,7 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 class JobType extends AbstractType
 {
-    /**
+        /**
      * @param FormBuilderInterface $builder
      * @param array $options
      */
@@ -25,15 +27,11 @@ class JobType extends AbstractType
             ->add('how_to_apply')
             ->add('token')
             ->add('is_public')
-            ->add('is_activated')
             ->add('email')
-            ->add('expires_at')
-            ->add('created_at')
-            ->add('updated_at')
             ->add('category')
         ;
     }
-    
+
     /**
      * @param OptionsResolverInterface $resolver
      */
