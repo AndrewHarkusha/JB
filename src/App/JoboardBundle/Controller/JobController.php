@@ -49,25 +49,30 @@ class JobController extends Controller
      * Creates a new Job entity.
      *
      */
-    public function createAction(Request $request)
-    {
-        $entity = new Job();
-        $form = $this->createCreateForm($entity);
-        $form->handleRequest($request);
+public function createAction(Request $request)
+{
+    $entity  = new Job();
+    $form = $this->createForm(new JobType(), $entity);
+    $form->handleRequest($request);
 
-        if ($form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($entity);
-            $em->flush();
+    if ($form->isValid()) {
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($entity);
+        $em->flush();
 
-            return $this->redirect($this->generateUrl('app_job_show', array('id' => $entity->getId())));
-        }
-
-        return $this->render('JoboardBundle:Job:new.html.twig', array(
-            'entity' => $entity,
-            'form'   => $form->createView(),
-        ));
+        return $this->redirect($this->generateUrl('app_job_show', array(
+            'company' => $entity->getCompanySlug(),
+            'location' => $entity->getLocationSlug(),
+            'id' => $entity->getId(),
+            'position' => $entity->getPositionSlug()
+        )));
     }
+
+    return $this->render('JoboardBundle:Job:new.html.twig', array(
+        'entity' => $entity,
+        'form'   => $form->createView(),
+    ));
+}
 
     /**
      * Creates a form to create a Job entity.
