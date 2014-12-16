@@ -521,4 +521,19 @@ class Job
         }
     }
 
+    public static function getTypes()
+    {
+        return [
+            'full-time' => 'Полный рабочий день', 
+            'part-time' => 'Неполный рабочий день', 
+            'freelance' => 'Фриланс'
+        ];
+    }
+
+    public static function getTypeValues()
+    {
+        return array_keys(self::getTypes());
+    }
+
+
 }
