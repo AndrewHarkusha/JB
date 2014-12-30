@@ -133,4 +133,164 @@ class JobControllerTest extends WebTestCase
 
         return $query->getSingleResult();
     }
+
+
+    public function testJobForm()
+{
+    $client  = static::createClient();
+    $crawler = $client->request('GET', '/job/new');
+
+
+    $this->assertEquals('App\JoboardBundle\Controller\JobController::newAction', $client->getRequest()->attributes->get('_controller'));
+
+    $form = $crawler->selectButton('Просмотр')->form([
+            'app_joboardbundle_job[company]'      => 'Test compamy',
+            'app_joboardbundle_job[url]'          => 'http://www.example.com/'
+            //'app_joboardbundle_job[file]'  => __DIR__.'/../../../../../web/bundles/joboard/images/joboard.png',
+            'app_joboardbundle_job[position]'     => 'Разработчик',
+            'app_joboardbundle_job[location]'     => 'Москва, Россия',
+            'app_joboardbundle_job[description]'  => 'Хорошее знание Symfony2',
+            'app_joboardbundle_job[how_to_apply]' => 'Резюме на электронную почту',
+            'app_joboardbundle_job[email]'        => 'job@example.com',
+            'app_joboardbundle_job[is_public]'    => false,
+   ]);
+
+    $client->submit($form);
+    $this->assertEquals('App\JoboardBundle\Controller\JobController::createAction', $client->getRequest()->attributes->get('_controller'));
+    $client->followRedirect();
+    $this->assertEquals('App\JoboardBundle\Controller\JobController::previewAction', $client->getRequest()->attributes->get('_controller'));
+
+    $kernel = static::createKernel();
+    $kernel->boot();
+    $em = $kernel->getContainer()->get('doctrine.orm.entity_manager');
+
+
+    $query = $em->createQuery('SELECT count(j.id) from AppJoboardBundle:Job j
+                                   WHERE j.location = :location
+                                   AND (j.is_activated = 0 OR j.is_activated IS NULL)
+                                   AND j.is_public = 0');
+    $query->setParameter('location', 'Москва, Россия');
+    $this->assertTrue((bool) $query->getSingleScalarResult());
+
+   $crawler = $client->request('GET', '/job/new');
+        $form = $crawler->selectButton('Просмотр')->form([
+            'app_joboardbundle_job[company]'      => 'Test compamy',
+            'app_joboardbundle_job[position]'     => 'Разработчик',
+            'app_joboardbundle_job[location]'     => 'Москва, Россия',
+            'app_joboardbundle_job[email]'        => 'not.an.email',
+    ]);
+    $crawler = $client->submit($form);
+
+    // Проверка количества ошибок
+   $this->assertTrue($crawler->filter('.error_list')->count() == 3);
+   $this->assertTrue($crawler->filter('#app_joboardbundle_job_description')->siblings()->first()->filter('.error_list')->count() == 1);
+   $this->assertTrue($crawler->filter('#app_joboardbundle_job_how_to_apply')->siblings()->first()->filter('.error_list')->count() == 1);
+   $this->assertTrue($crawler->filter('#app_joboardbundle_job_email')->siblings()->first()->filter('.error_list')->count() == 1);
+
+}
+
+
+    public function createJob($values = [])
+    {
+        $client  = static::createClient();
+        $crawler = $client->request('GET', '/job/new');
+        $form    = $crawler->selectButton('Отправить')->form(array_merge([
+            'app_joboardbundle_job[company]'      => 'Test company',
+            'app_joboardbundle_job[url]'          => 'http://www.example.com/',
+            'app_joboardbundle_job[position]'     => 'Разработчик',
+            'app_joboardbundle_job[location]'     => 'Москва, Россия',
+            'app_joboardbundle_job[description]'  => 'Хорошее знание Symfony2',
+            'app_joboardbundle_job[how_to_apply]' => 'Резюме на электронную почту',
+            'app_joboardbundle_job[email]'        => 'job@example.com',
+            'app_joboardbundle_job[is_public]'    => false,
+        ], $values));
+
+        $client->submit($form);
+        $client->followRedirect();
+
+        return $client;
+    }
+
+
+    public function testPublishJob()
+    {
+        $client  = $this->createJob(['app_joboardbundle_job[position]' => 'FOO1']);
+        $crawler = $client->getCrawler();
+        $form = $crawler->selectButton('Опубликовать')->form();
+        $client->submit($form);
+
+        $kernel = static::createKernel();
+        $kernel->boot();
+        $em = $kernel->getContainer()->get('doctrine.orm.entity_manager');
+        $query = $em->createQuery('SELECT count(j.id) from AppJoboardBundle:Job j
+                                   WHERE j.position = :position AND j.is_activated = 1');
+        $query->setParameter('position', 'FOO1');
+        $this->assertTrue((bool) $query->getSingleScalarResult());
+    }
+
+    public function testDeleteJob()
+    {
+        $client  = $this->createJob(['app_joboardbundle_job[position]' => 'FOO2']);
+        $crawler = $client->getCrawler();
+        $form    = $crawler->selectButton('Удалить')->form();
+        $client->submit($form);
+
+        $kernel = static::createKernel();
+        $kernel->boot();
+        $em = $kernel->getContainer()->get('doctrine.orm.entity_manager');
+
+        $query = $em->createQuery('SELECT count(j.id) from AppJoboardBundle:Job j
+                                   WHERE j.position = :position');
+        $query->setParameter('position', 'FOO2');
+        $this->assertTrue(0 == $query->getSingleScalarResult());
+    }
+
+    public function createJob($values = [], $publish = false)
+    {
+        $client  = static::createClient();
+        $crawler = $client->request('GET', '/job/new');
+        $form    = $crawler->selectButton('Отправить')->form(array_merge([
+            'app_joboardbundle_job[company]'      => 'Test company',
+            'app_joboardbundle_job[url]'          => 'http://www.example.com/',
+            'app_joboardbundle_job[position]'     => 'Разработчик',
+            'app_joboardbundle_job[location]'     => 'Москва, Россия',
+            'app_joboardbundle_job[description]'  => 'Хорошее знание Symfony2',
+            'app_joboardbundle_job[how_to_apply]' => 'Резюме на электронную почту',
+            'app_joboardbundle_job[email]'        => 'job@example.com',
+            'app_joboardbundle_job[is_public]'    => false,
+        ], $values));
+
+        $client->submit($form);
+        $client->followRedirect();
+
+        if ($publish) {
+            $crawler = $client->getCrawler();
+            $form = $crawler->selectButton('Опубликовать')->form();
+            $client->submit($form);
+            $client->followRedirect();
+        }
+
+        return $client;
+    }
+
+    public function getJobByPosition($position)
+    {
+        $kernel = static::createKernel();
+        $kernel->boot();
+        $em = $kernel->getContainer()->get('doctrine.orm.entity_manager');
+
+        $query = $em->createQuery('SELECT j from AppJoboardBundle:Job j WHERE j.position = :position');
+        $query->setParameter('position', $position);
+        $query->setMaxResults(1);
+        return $query->getSingleResult();
+    }
+
+    public function testEditJob()
+    {
+        $client = $this->createJob(['app_joboardbundle_job[position]' => 'FOO3'], true);
+        $client->getCrawler();
+        $client->request('GET', sprintf('/job/%s/edit', $this->getJobByPosition('FOO3')->getToken()));
+        $this->assertEquals(404, $client->getResponse()->getStatusCode());
+    }
+
 }

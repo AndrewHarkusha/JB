@@ -29,3 +29,8 @@ app_job_delete:
     path:     /{id}/delete
     defaults: { _controller: "JoboardBundle:Job:delete" }
     requirements: { _method: post|delete }
+
+app_job_extend:
+   pattern:  /{token}/extend/
+   defaults: { _controller: "AppJoboardBundle:Job:extend" }
+   requirements: { _method: post }

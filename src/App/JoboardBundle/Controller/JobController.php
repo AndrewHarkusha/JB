@@ -136,13 +136,17 @@ public function createAction(Request $request)
      */
     public function editAction($id)
     {
-        $em = $this->getDoctrine()->getManager();
+    $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('JoboardBundle:Job')->find($id);
+    $entity = $em->getRepository('JoboardBundle:Job')->findOneByToken($token);
 
-        if (!$entity) {
-            throw $this->createNotFoundException('Unable to find Job entity.');
-        }
+     if (!$entity) {
+         throw $this->createNotFoundException('Такой вакансии не существует.');
+     }
+
+     if ($entity->getIsActivated()) {
+         throw $this->createNotFoundException('Эта вакансия опубликована и не может быть отредактирована.');
+     }
 
         $editForm = $this->createEditForm($entity);
         $deleteForm = $this->createDeleteForm($id);
@@ -153,6 +157,7 @@ public function createAction(Request $request)
             'delete_form' => $deleteForm->createView(),
         ));
     }
+
 
     /**
     * Creates a form to edit a Job entity.
